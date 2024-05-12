@@ -1,0 +1,7 @@
+{
+    "bots": [
+        "ExampleBot",
+        "bot1",
+		"marketMakerBot"
+    ]
+}
