@@ -1,0 +1,14 @@
+1) Arbitrage on the prices of the ETF/short etf. Trade forward and backward based on its prices
+Need to be quickly in trading it, fast computations
+
+2) Idea 1 is to make a bot to beat the best bid and ask slightly so we profit off of naive bots
+Do this by storing our best bid and best ask, and if it differs from current best orders, cancel them and place new ones
+
+
+
+
+
+TODO:
+Email Mike about the intricacies of the short ETF, and how to redeem it
+Ask about `on_trade_completion`, and why its not called
+Can we sell shares of stocks that we don't own
