@@ -153,6 +153,12 @@ class TradingBot:
             self.exchange.add_order(BUY_ORDER)
             self.orderTracker[4][0].append(BUY_ORDER)
 
+        MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
+        SMAGbbo = self.exchange.get_bbo('SMAG')
+        AAPLbbo = self.exchange.get_bbo('AAPL')
+        GOOGbbo = self.exchange.get_bbo('GOOG')
+        MSFTbbo = self.exchange.get_bbo('MSFT')
+
         # STOCK MARKET MAKING
         stockList = [['AAPL', AAPLtheoPrice, AAPLbbo], ['GOOG', GOOGtheoPrice, GOOGbbo], ['MSFT', MSFTtheoPrice, MSFTbbo], ['MAG', Decimal(stocksTotal) / Decimal('2000.0'), MAGbbo]]
         for i in range(4):
