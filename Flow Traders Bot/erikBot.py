@@ -95,6 +95,12 @@ class TradingBot:
                     for ord in buy_order:
                         if(order.order_id == ord[0]):
                             self.exchange.cancel_order(order)
+                self.orderTracker[i][1].clear()
+                for order in self.orderTracker[i][1]:
+                    for ord in sell_order:
+                        if(order.order_id == ord[0]):
+                            self.exchange.cancel_order(order)
+                self.orderTracker[i][1].clear()
         else:
             self.first = False
         
