@@ -3,7 +3,10 @@ Need to be quickly in trading it, fast computations
 
 2) Idea 1 is to make a bot to beat the best bid and ask slightly so we profit off of naive bots
 Do this by storing our best bid and best ask, and if it differs from current best orders, cancel them and place new ones
+dont use "get_current_orders", it's too slow
 
+3) Some formula calculation to offload held shares so that we remain market neutral
+i.e if we're holding too make google shares, make our best ask slightly lower so that we're able to sell more of them
 
 3) Keep historical data on MAG/SMAG and trade between 
 
@@ -13,3 +16,13 @@ TODO:
 Email Mike about the intricacies of the short ETF, and how to redeem it
 Ask about `on_trade_completion`, and why its not called
 Can we sell shares of stocks that we don't own
+
+
+
+Optimizations from Erik's Code
+1) Don't need to check about canceling, just place the best order we can and then immediately cancel our previous order
+2a) ETF arbitrage can't be done with the theo, need to compare the direct bid/asks
+2b) Also make sure to buy and sell the ETF + underlying at that moment, that's how we obtain the edge. Don't want to be holding either
+3) Maybe don't arbitrage SMAG? Don't know what's the underlying conversion of that
+
+4) Pairs trading with MAG and SMAG
