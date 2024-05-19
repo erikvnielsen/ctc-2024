@@ -1,4 +1,4 @@
-# This is an example bot
+# This is an erikBot bot
 
 import random
 import time
@@ -29,6 +29,9 @@ class TradingBot:
         
         # Used to place initial orders quicker than other teams
         self.first = True
+        self.cancelOrders = []
+        self.orderTracker = [[[],[]],[[],[]],[[],[]],[[],[]],[[],[]]]
+        # AAPL = 0 GOOG = 1 MSFT = 2 MAG = 3 SMAG = 4 (INDEXES) The BUY is on the 0 and SELL on the 1
         
         # self.AAPLorders = [Order(None, self.bot_id, 'AAPL', 'buy', 0),Order(None, self.bot_id, 'AAPL', 'sell', 100000)] 
         # self.GOOGorders = [Order(None, self.bot_id, 'GOOG', 'buy', 0),Order(None, self.bot_id, 'GOOG', 'sell', 100000)] 
@@ -57,27 +60,41 @@ class TradingBot:
         # MSFT price = 400
         # MAG price = 70
         # SMAG price = 70
-
+        
+        # Cancel all old outstanding orders
+        ''' for order in self.cancelOrders:
+            self.exchange.cancel_order(order)
+        
+        self.cancelOrders.clear() ''' 
         symbols = ['AAPL', 'GOOG', 'MSFT', 'MAG', 'SMAG']
-        desiredSpread = Decimal('0.02')
+
+        ''' if(not self.first):
+            for symbol in symbols: 
+                currbuyOrders, currsellOrders = self.exchange.get_current_orders(self.bot_id, symbol)
+                # buy_orders.append([order.order_id, order.symbol, order.order_type, order.quantity, order.price, order.added_time])
+                # Order(None, self.bot_id, 'SMAG', 'sell', 100, SMAGbbo[1]) 
+                for order in currbuyOrders:
+                    self.exchange.cancel_order(Order(order))
+                for order in currsellOrders:
+                    self.exchange.cancel_order(order)
+        else:
+            self.first = False '''
+
+        desiredSpread = Decimal('0.01')
         desiredQuantity = 1000
 
         # indices will be set to one if an entire order has been filled so we don't accidentally cancel an order that has been filled
         # AAPL = 0 GOOG = 2 MSFT = 4 MAG = 6 SMAG = 8 (INDEXES) The BUY is on the even and SELL on the odd
-        currOrders = [1,1,1,1,1,1,1,1,1,1]
+        # currOrders = [0,0,0,0,0,0,0,0,0,0]
         # Value of 1 indicates an order has been filled so there is no need to cancel it
 
         if(not self.first):
-            for i in range(0,10,2):
-                buy_order, sell_order = self.exchange.get_current_orders(self.bot_id,symbols[math.floor(i/2)])
-                if(len(buy_order) != 1):
-                    currOrders[i] = 1
-                else:
-                    currOrders[i] = 0
-                if(len(sell_order) != 1):
-                    currOrders[i+1] = 1
-                else:
-                    currOrders[i+1] = 0
+            for i in range(0,5):
+                buy_order, sell_order = self.exchange.get_current_orders(self.bot_id,symbols[i])
+                for order in self.orderTracker[i][0]:
+                    for ord in buy_order:
+                        if(order.order_id == ord[0]):
+                            self.exchange.cancel_order(order)
         else:
             self.first = False
         
@@ -87,12 +104,18 @@ class TradingBot:
             # for entry in self.orders_placed:
                 # self.exchange.add_order(entry[0])
                 # self.exchange.add_order(entry[1])
+    
 
         MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
         SMAGbbo = self.exchange.get_bbo('SMAG')
         AAPLbbo = self.exchange.get_bbo('AAPL')
         GOOGbbo = self.exchange.get_bbo('GOOG')
         MSFTbbo = self.exchange.get_bbo('MSFT')
+
+        ''' MAGbuy, MAGBuyVol = self.exchange.get_best_bid('MAG')
+        MAGsell, MAGSellVol = self.exchange.get_best_ask('MAG')
+        SMAGbuy, SMAGBuyVol = self.exchange.get_best_bid('SMAG')
+        SMAGsell, SMAGSellVol = self.exchange.get_best_ask('SMAG') '''
 
         MAGtheoPrice = (MAGbbo[0] + MAGbbo[1]) / Decimal('2.0')
         SMAGtheoPrice = (SMAGbbo[0] + SMAGbbo[1]) / Decimal('2.0')
@@ -101,66 +124,69 @@ class TradingBot:
         MSFTtheoPrice = (MSFTbbo[0] + MSFTbbo[1]) / Decimal('2.0')
 
         stocksTotal = (300 * AAPLtheoPrice) + (20 * GOOGtheoPrice) + (100 * MSFTtheoPrice)
-        MAGTotal = 2000 * MAGtheoPrice
-        SMAGTotal = 2000 * SMAGtheoPrice
+        # MAGTotal = 2000 * MAGtheoPrice
+        MAGBuyTotal = 2000 * MAGbbo[0]
+        MAGSellTotal = 2000 *  MAGbbo[1]
+
+        # SMAGTotal = 2000 * SMAGtheoPrice
+        SMAGBuyTotal = 2000 * SMAGbbo[0]
+        SMAGSellTotal = 2000 *  SMAGbbo[1]
+
 
         # MAG ETF ARBITRAGE
-        if(stocksTotal < MAGTotal): 
-            price = MAGbbo[0]+desiredSpread
-            if(price < MAGtheoPrice):
-                BUY_ORDER = (Order(None, self.bot_id, 'MAG', 'buy', desiredQuantity, price))
-                self.exchange.add_order(BUY_ORDER)
-                if(currOrders[6] == 0):
-                    self.exchange.cancel_order(self.orders_placed[3][0])
-                    # self.etf_last_order[0] = 0
-                self.orders_placed[3][0] = BUY_ORDER
-        else:
-            price = MAGbbo[1]-desiredSpread
-            if(price > MAGtheoPrice):
-                SELL_ORDER = (Order(None, self.bot_id, 'MAG', 'sell', desiredQuantity, price))
-                self.exchange.add_order(SELL_ORDER)
-                if(currOrders[7] == 0):
-                    self.exchange.cancel_order(self.orders_placed[3][1])
-                    # self.etf_last_order[0] = 1
-                self.orders_placed[3][1] = SELL_ORDER
+        if(stocksTotal < MAGBuyTotal): 
+            BUY_ORDER = (Order(None, self.bot_id, 'MAG', 'buy', 100, MAGbbo[0]))
+            self.exchange.add_order(BUY_ORDER)
+            self.orderTracker[3][0].append(BUY_ORDER)
+        elif(stocksTotal > MAGSellTotal):
+            SELL_ORDER = (Order(None, self.bot_id, 'MAG', 'sell', 100, MAGbbo[1]))
+            self.exchange.add_order(SELL_ORDER)
+            self.orderTracker[3][1].append(SELL_ORDER)
 
         # SMAG ETF ARBITRAGE
-        if(stocksTotal < SMAGTotal):
-            price = SMAGbbo[1]-desiredSpread
-            if(price < SMAGtheoPrice):
-                SELL_ORDER = (Order(None, self.bot_id, 'SMAG', 'sell', desiredQuantity, price))
-                self.exchange.add_order(SELL_ORDER)
-                if(currOrders[8] == 0):
-                    self.exchange.cancel_order(self.orders_placed[4][1])
-                    # self.etf_last_order[0] = 1
-                self.orders_placed[4][1] = SELL_ORDER
-        else:
-            price = SMAGbbo[0]+desiredSpread
-            if(price > SMAGtheoPrice):
-                BUY_ORDER = (Order(None, self.bot_id, 'SMAG', 'buy', desiredQuantity, price))
-                self.exchange.add_order(BUY_ORDER)
-                if(currOrders[9] == 0):
-                    self.exchange.cancel_order(self.orders_placed[4][0])
-                    # self.etf_last_order[0] = 0
-                self.orders_placed[4][0] = BUY_ORDER
+        if(stocksTotal < SMAGBuyTotal):
+            SELL_ORDER = (Order(None, self.bot_id, 'SMAG', 'sell', 100, SMAGbbo[1]))
+            self.exchange.add_order(SELL_ORDER)
+            self.orderTracker[4][1].append(SELL_ORDER)
+        elif(stocksTotal > SMAGSellTotal):
+            BUY_ORDER = (Order(None, self.bot_id, 'SMAG', 'buy', 100, SMAGbbo[0]))
+            self.exchange.add_order(BUY_ORDER)
+            self.orderTracker[4][0].append(BUY_ORDER)
 
         # STOCK MARKET MAKING
-        stockList = [['AAPL', AAPLtheoPrice, AAPLbbo], ['GOOG', GOOGtheoPrice, GOOGbbo], ['MSFT', MSFTtheoPrice, MSFTbbo]]
-        for i in range(3):
+        stockList = [['AAPL', AAPLtheoPrice, AAPLbbo], ['GOOG', GOOGtheoPrice, GOOGbbo], ['MSFT', MSFTtheoPrice, MSFTbbo], ['MAG', Decimal(stocksTotal) / Decimal('2000.0'), MAGbbo]]
+        for i in range(4):
             stock = stockList[i]
             buyPrice = stock[2][0] + desiredSpread
             sellPrice = stock[2][1] - desiredSpread
             if(buyPrice < stock[1]):
                 BUY_ORDER = (Order(None, self.bot_id, stock[0], 'buy', desiredQuantity, buyPrice))
                 self.exchange.add_order(BUY_ORDER)
-                if(currOrders[i*2] == 0):
-                    self.exchange.cancel_order(self.orders_placed[i][0])
+                self.orderTracker[i][0].append(BUY_ORDER)
+                """ if(not self.first):
+                    self.exchange.cancel_order(self.orders_placed[i][0]) """
                 self.orders_placed[i][0] = BUY_ORDER
             if(sellPrice > stock[1]):
                 SELL_ORDER = (Order(None, self.bot_id, stock[0], 'sell', desiredQuantity, sellPrice))
                 self.exchange.add_order(SELL_ORDER)
-                if(currOrders[(i*2)+1] == 0):
-                    self.exchange.cancel_order(self.orders_placed[i][1])
+                self.orderTracker[i][1].append(SELL_ORDER)
+                """ if(not self.first):
+                    self.exchange.cancel_order(self.orders_placed[i][1]) """
                 self.orders_placed[i][1] = SELL_ORDER
 
-        
+        # SEPARATE CALCULATIONS FOR SMAG
+        buyPrice = SMAGbbo[0] + desiredSpread
+        sellPrice = SMAGbbo[1] - desiredSpread
+        # WE WOULD EXPECT SMAG TO BE WORTH THE INVERSE OF HOWEVER MUCH MAG IS OVER THE NET ASSET VALUE
+        SMAGtruePrice = (Decimal(stocksTotal) / Decimal('2000.0')) - (Decimal(MAGtheoPrice - Decimal(stocksTotal) / Decimal('2000.0'))) 
+
+        if(buyPrice < SMAGtruePrice):
+            BUY_ORDER = (Order(None, self.bot_id, 'SMAG', 'buy', desiredQuantity, buyPrice))
+            self.exchange.add_order(BUY_ORDER)
+            self.orderTracker[4][0].append(BUY_ORDER)
+            self.orders_placed[4][0] = BUY_ORDER
+        if(sellPrice > SMAGtruePrice):
+            SELL_ORDER = (Order(None, self.bot_id, 'SMAG', 'sell', desiredQuantity, buyPrice))
+            self.exchange.add_order(SELL_ORDER)
+            self.orderTracker[4][1].append(SELL_ORDER)
+            self.orders_placed[4][1] = SELL_ORDER
