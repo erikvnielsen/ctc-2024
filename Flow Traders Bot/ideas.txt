@@ -5,8 +5,9 @@ Need to be quickly in trading it, fast computations
 Do this by storing our best bid and best ask, and if it differs from current best orders, cancel them and place new ones
 
 
+3) Keep historical data on MAG/SMAG and trade between 
 
-
+4) See if you can get rid of currOrders with no errors
 
 TODO:
 Email Mike about the intricacies of the short ETF, and how to redeem it
