@@ -65,16 +65,22 @@ def main():
     
     # Creating and starting threads for each bot
     threads = []
+    pnls = []
     for bot_name in config['bots']:
         bot_class = load_bot(bot_name)
         t = threading.Thread(target=run_bot, args=(bot_class, exchange_instance, duration, symbols))
         threads.append(t)
         t.start()
+        pnls.append([bot_name])
 
     # Wait for all threads to complete
     for thread in threads:
         thread.join()
-    
+
+    print('TOTAL PNLS')
+    for pnl in pnls:
+        print(pnl[0] + ': ')
+
 
     
 if __name__ == "__main__":
