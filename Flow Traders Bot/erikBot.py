@@ -186,19 +186,4 @@ class TradingBot:
                     self.exchange.cancel_order(self.orders_placed[i][1]) """
                 self.orders_placed[i][1] = SELL_ORDER
 
-        # SEPARATE CALCULATIONS FOR SMAG
-        buyPrice = SMAGbbo[0] + desiredSpread
-        sellPrice = SMAGbbo[1] - desiredSpread
-        # WE WOULD EXPECT SMAG TO BE WORTH THE INVERSE OF HOWEVER MUCH MAG IS OVER THE NET ASSET VALUE
-        SMAGtruePrice = (Decimal(stocksTotal) / Decimal('2000.0')) - (Decimal(MAGtheoPrice - Decimal(stocksTotal) / Decimal('2000.0'))) 
-
-        if(buyPrice < SMAGtruePrice):
-            BUY_ORDER = (Order(None, self.bot_id, 'SMAG', 'buy', desiredQuantity, buyPrice))
-            self.exchange.add_order(BUY_ORDER)
-            self.orderTracker[4][0].append(BUY_ORDER)
-            self.orders_placed[4][0] = BUY_ORDER
-        if(sellPrice > SMAGtruePrice):
-            SELL_ORDER = (Order(None, self.bot_id, 'SMAG', 'sell', desiredQuantity, buyPrice))
-            self.exchange.add_order(SELL_ORDER)
-            self.orderTracker[4][1].append(SELL_ORDER)
-            self.orders_placed[4][1] = SELL_ORDER
+        
