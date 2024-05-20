@@ -43,19 +43,6 @@ class TradingBot:
             self.exchange.cancel_order(order)
         
         self.cancelOrders.clear() ''' 
-        symbols = ['AAPL', 'GOOG', 'MSFT', 'MAG', 'SMAG']
-
-        ''' if(not self.first):
-            for symbol in symbols: 
-                currbuyOrders, currsellOrders = self.exchange.get_current_orders(self.bot_id, symbol)
-                # buy_orders.append([order.order_id, order.symbol, order.order_type, order.quantity, order.price, order.added_time])
-                # Order(None, self.bot_id, 'SMAG', 'sell', 100, SMAGbbo[1]) 
-                for order in currbuyOrders:
-                    self.exchange.cancel_order(Order(order))
-                for order in currsellOrders:
-                    self.exchange.cancel_order(order)
-        else:
-            self.first = False '''
 
         desiredSpread = Decimal('0.01')
         desiredQuantity = 1000
@@ -68,7 +55,7 @@ class TradingBot:
     
 
         MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
-        SMAGbbo = self.exchange.get_bbo('SMAG')
+        #SMAGbbo = self.exchange.get_bbo('SMAG')
         AAPLbbo = self.exchange.get_bbo('AAPL')
         GOOGbbo = self.exchange.get_bbo('GOOG')
         MSFTbbo = self.exchange.get_bbo('MSFT')
@@ -107,7 +94,7 @@ class TradingBot:
 
 
         MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
-        SMAGbbo = self.exchange.get_bbo('SMAG')
+        #SMAGbbo = self.exchange.get_bbo('SMAG')
         AAPLbbo = self.exchange.get_bbo('AAPL')
         GOOGbbo = self.exchange.get_bbo('GOOG')
         MSFTbbo = self.exchange.get_bbo('MSFT')
