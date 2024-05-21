@@ -49,7 +49,7 @@ class TradingBot:
         self.cancelOrders.clear() ''' 
 
         desiredSpread = Decimal('0.01')
-        desiredQuantity = 1000
+        desiredQuantity = 50000
 
         # indices will be set to one if an entire order has been filled so we don't accidentally cancel an order that has been filled
         # AAPL = 0 GOOG = 2 MSFT = 4 MAG = 6 SMAG = 8 (INDEXES) The BUY is on the even and SELL on the odd
@@ -148,8 +148,8 @@ class TradingBot:
                 self.marketMakeAsks[stock[0]] = SELL_ORDER
             elif self.ZeroSpread[i] == False:
                 self.ZeroSpread[i] = True
-                BUY_ORDER = (Order(None, self.bot_id, stock[0], 'buy', 10000, stock[1][0]))
-                SELL_ORDER = (Order(None, self.bot_id, stock[0], 'sell', 10000, stock[1][1]))
+                BUY_ORDER = (Order(None, self.bot_id, stock[0], 'buy', 1000000, stock[1][0]))
+                SELL_ORDER = (Order(None, self.bot_id, stock[0], 'sell', 1000000, stock[1][1]))
                 self.exchange.add_order(BUY_ORDER)
                 self.exchange.add_order(SELL_ORDER)
 
@@ -168,8 +168,8 @@ class TradingBot:
                 self.marketMakeBids[stock[0]] = BUY_ORDER
                 self.marketMakeAsks[stock[0]] = SELL_ORDER
 
-        MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
-        SMAGbbo = self.exchange.get_bbo('SMAG')
+        #MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
+        #SMAGbbo = self.exchange.get_bbo('SMAG')
 
         # SMAG MARKET MAKING
         
