@@ -58,12 +58,13 @@ class TradingBot:
 
     
 
-        MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
-        SMAGbbo = self.exchange.get_bbo('SMAG')
+        #MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
+        #SMAGbbo = self.exchange.get_bbo('SMAG')
         AAPLbbo = self.exchange.get_bbo('AAPL')
         GOOGbbo = self.exchange.get_bbo('GOOG')
         MSFTbbo = self.exchange.get_bbo('MSFT')
 
+        """
         stocksBidTotal = (300 * AAPLbbo[0]) + (20 * GOOGbbo[0]) + (100 * MSFTbbo[0])
         stocksAskTotal = (300 * AAPLbbo[1]) + (20 * GOOGbbo[1]) + (100 * MSFTbbo[1])
 
@@ -107,18 +108,19 @@ class TradingBot:
             MAGaskChange = MAGbbo[1] - self.MAGhistData[1]
             SMAGbidChange = SMAGbbo[0] - self.SMAGhistData[0]
             SMAGaskChange = SMAGbbo[1] - self.SMAGhistData[1] '''
+        """
             
 
 
-        MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
-        SMAGbbo = self.exchange.get_bbo('SMAG')
+        #MAGbbo = self.exchange.get_bbo('MAG') # best bid and best offer in a vector (0 is bid and 1 is offer)
+        #SMAGbbo = self.exchange.get_bbo('SMAG')
         AAPLbbo = self.exchange.get_bbo('AAPL')
         GOOGbbo = self.exchange.get_bbo('GOOG')
         MSFTbbo = self.exchange.get_bbo('MSFT')
 
         # STOCK MARKET MAKING
-        stockList = [['AAPL', AAPLbbo], ['GOOG', GOOGbbo], ['MSFT', MSFTbbo], ['MAG', MAGbbo]]
-        for i in range(4):
+        stockList = [['AAPL', AAPLbbo], ['GOOG', GOOGbbo], ['MSFT', MSFTbbo]]
+        for i in range(3):
             stock = stockList[i]
             buyPrice = stock[1][0] + desiredSpread
             sellPrice = stock[1][1] - desiredSpread
