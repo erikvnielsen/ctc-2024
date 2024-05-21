@@ -27,7 +27,7 @@ def run_exchange_matching(exchange, duration):
     start_time = time.time()
     """Function to continuously match orders in the exchange."""
     while time.time() - start_time < duration:
-        #exchange._match_orders()
+        exchange._match_orders()
         time.sleep(.001) # There is a built in sleep otherwise this would probably crash your system
 
 def plot_pnl(pnl_data):
@@ -57,6 +57,7 @@ def main():
     # Load bot configurations from a JSON file
     with open('bots_config.json', 'r') as f:
         config = json.load(f)
+        print(config)
     
     # Start a thread for continuous order matching
     matching_thread = threading.Thread(target=run_exchange_matching, args=(exchange_instance,duration))
